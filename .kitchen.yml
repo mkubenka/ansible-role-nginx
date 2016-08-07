@@ -33,3 +33,6 @@ platforms:
 
 suites:
   - name: default
+  - name: modules
+    provisioner:
+      recursive_additional_copy_path: test/integration/modules/files

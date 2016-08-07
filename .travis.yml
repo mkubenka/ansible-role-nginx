@@ -11,6 +11,8 @@ env:
   matrix:
     - INSTANCE=default-centos-6
     - INSTANCE=default-centos-7
+    - INSTANCE=modules-centos-6
+    - INSTANCE=modules-centos-7
 
 before_script:
   # https://github.com/zuazo/kitchen-in-travis-native/issues/1#issuecomment-142230889

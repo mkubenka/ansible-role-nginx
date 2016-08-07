@@ -18,6 +18,10 @@ them are as follows. (For all variables, take a look at [defaults/main.yml](defa
 # Sets the maximum allowed size of the client request body.
 nginx_client_max_body_size: '2M'
 
+# List of dynamic modules to load.
+nginx_modules: 
+  - ngx_http_modsecurity
+
 # Defines trusted addresses that are known to send correct replacement addresses.
 nginx_set_real_ip_from: '192.168.1.1'
 
