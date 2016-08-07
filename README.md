@@ -1,4 +1,4 @@
-# Ansible Role NGINX [![Build Status](https://travis-ci.org/mkubenka/ansible-role-nginx.svg?branch=master)](https://travis-ci.org/mkubenka/ansible-role-nginx) [![Ansible Role](https://img.shields.io/ansible/role/11385.svg?maxAge=2592000)]()
+# Ansible Role NGINX [![Build Status](https://travis-ci.org/mkubenka/ansible-role-nginx.svg?branch=master)](https://travis-ci.org/mkubenka/ansible-role-nginx) [![Ansible Role](https://img.shields.io/ansible/role/11385.svg?maxAge=2592000)](https://galaxy.ansible.com/mkubenka/nginx/)
 
 Nginx (pronounced "engine x") is a web server. It can act as a reverse proxy server for TCP, UDP, HTTP, HTTPS, SMTP, POP3, and IMAP protocols, as well as a load balancer and an HTTP cache.
 
