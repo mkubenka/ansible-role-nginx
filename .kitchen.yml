@@ -14,6 +14,7 @@ provisioner:
   require_ruby_for_busser: false
   ansible_verbose: true
   ansible_verbosity: 2
+  requirements_path: requirements.yml
 
 verifier:
   name: inspec
@@ -33,6 +34,7 @@ platforms:
 
 suites:
   - name: default
+  - name: geoip
   - name: modules
     provisioner:
       recursive_additional_copy_path: test/integration/modules/files

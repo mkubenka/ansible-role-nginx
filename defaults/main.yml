@@ -3,3 +3,5 @@
 nginx_client_max_body_size: '2M'
 
 nginx_modules: []
+
+nginx_enable_geoip: no

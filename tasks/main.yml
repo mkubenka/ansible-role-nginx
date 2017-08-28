@@ -17,6 +17,12 @@
   with_items:
     - nginx
 
+- name: install nginx geoip module
+  yum: pkg={{ item }} state=present
+  with_items:
+    - nginx-module-geoip
+  when: nginx_enable_geoip
+
 - name: start and enable the nginx
   service: name=nginx state=started enabled=true
 

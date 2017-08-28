@@ -6,7 +6,8 @@ Nginx (pronounced "engine x") is a web server. It can act as a reverse proxy ser
 
 ## Requirements
 
-None
+* if `nginx_enable_geoip` is enabled
+    * `geoip` you can use the [mkubenka.geoip](https://github.com/mkubenka/ansible-role-geoip) role to install.
 
 ## Role Variables
 
@@ -27,6 +28,9 @@ nginx_set_real_ip_from: '192.168.1.1'
 
 # Defines the request header field whose value will be used to replace the client address.
 nginx_real_ip_header: 'X-Real-IP'
+
+# Enable nginx GeoIP support.
+nginx_enable_geoip: yes
 
 ```
 
