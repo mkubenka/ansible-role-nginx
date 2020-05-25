@@ -1,5 +1,22 @@
-# Check with AWS US IP.
-describe command('curl -H "X-Forwarded-For: 129.33.160.1" -I localhost/block') do
-    its('stdout') { should match /200 OK/ }
-    its('exit_status') { should eq 0 }
+describe package('nginx') do
+    it { should be_installed }
+end
+
+describe package('nginx-module-njs') do
+    it { should be_installed }
+end
+
+describe service('nginx') do
+    it { should be_installed }
+    it { should be_enabled }
+    it { should be_running }
+end
+
+describe http('http://localhost/nginx_status') do
+  its('status') { should cmp 200 }
+end
+
+describe http('http://localhost/test') do
+  its('status') { should cmp 200 }
+  its('body') { should cmp 'Hello world!' }
 end

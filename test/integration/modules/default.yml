@@ -5,15 +5,15 @@
   pre_tasks:
     - name: do not requires a TTY when using sudo
       copy:
-        content="Defaults !requiretty\n"
-        dest="/etc/sudoers.d/cloud-init-requiretty"
-        mode=0400
-        validate="visudo -cf %s"
+        content: "Defaults !requiretty\n"
+        dest: "/etc/sudoers.d/cloud-init-requiretty"
+        mode: 0400
+        validate: "visudo -cf %s"
 
-    - name: remove SSH users from all groups
+    - name: remove SSH user from all groups
       user:
-        name="{{ ansible_env.SUDO_USER }}"
-        groups=""
+        name: "{{ ansible_env.SUDO_USER }}"
+        groups: ""
 
   roles:
     - role: nginx
@@ -22,22 +22,22 @@
 
   vars:
     nginx_modules:
-      - ngx_http_geoip_module
+      - ngx_http_js_module
 
   pre_tasks:
-    - name: install geoip module
+    - name: install njs module
       yum:
-        name=nginx-module-geoip
-        state=present
+        name: nginx-module-njs
+        state: present
 
     - name: copy additional nginx configuration
       template:
-        src={{ item }}
-        dest=/etc/nginx/conf.d/{{ item[:-3] | basename }}
+        src: "{{ item }}"
+        dest: "/etc/nginx/conf.d/{{ item[:-3] | basename }}"
       # When using relative path ansible default looks in files/ directory :-(
       with_fileglob:
         - test/integration/modules/files/conf.d/*.j2
 
   roles:
     - role: nginx
-      notify: validate and reload nginx
+      notify: validate and restart nginx
