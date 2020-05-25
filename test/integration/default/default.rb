@@ -8,7 +8,6 @@ describe service('nginx') do
     it { should be_running }
 end
 
-describe command('curl --silent -I localhost/nginx_status') do
-    its('stdout') { should match /200 OK/ }
-    its('exit_status') { should eq 0 }
+describe http('http://localhost/nginx_status') do
+  its('status') { should cmp 200 }
 end
