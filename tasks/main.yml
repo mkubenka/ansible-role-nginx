@@ -1,44 +1,84 @@
 ---
 
-- name: copy the nginx stable repository definition
-  copy: src=centos6.repo dest=/etc/yum.repos.d/nginx.repo
-  when: ansible_distribution == 'Amazon'
-    or (ansible_distribution == 'CentOS' and ansible_distribution_major_version == '6')
+- name: add nginx stable repository
+  yum_repository:
+    name: nginx
+    description: nginx repo
+    baseurl: "http://nginx.org/packages/centos/{{ ansible_distribution_major_version }}/$basearch/"
+    gpgcheck: no
+    enabled: yes
+    priority: 5
+  notify: yum clean metadata
 
-- name: copy the nginx stable repository definition
-  copy: src=centos7.repo dest=/etc/yum.repos.d/nginx.repo
-  when: ansible_distribution == 'CentOS' and ansible_distribution_major_version == '7'
+- name: disable default nginx module
+  copy:
+    dest: /etc/dnf/modules.d/nginx.module
+    content: |
+      [nginx]
+      name=nginx
+      stream=
+      profiles=
+      state=disabled
+  when:
+    - ansible_distribution == 'CentOS'
+    - ansible_distribution_major_version | int >= 8
 
 - name: create the GPG key for nginx
-  rpm_key: state=present key=http://nginx.org/keys/nginx_signing.key
+  rpm_key:
+    state: present
+    key: http://nginx.org/keys/nginx_signing.key
 
 - name: install nginx packages
-  yum: pkg={{ item }} state=present
-  with_items:
-    - nginx
+  yum:
+    name:
+      - nginx
+    state: present
+
+- fail:
+    msg: GeoIP is not supproted on CentOS 8.
+  when:
+    - nginx_enable_geoip
+    - ansible_distribution == 'CentOS'
+    - ansible_distribution_major_version | int >= 8
 
 - name: install nginx geoip module
-  yum: pkg={{ item }} state=present
-  with_items:
-    - nginx-module-geoip
+  yum:
+    name:
+      - nginx-module-geoip
+    state: present
   when: nginx_enable_geoip
 
 - name: start and enable the nginx
-  service: name=nginx state=started enabled=true
+  service:
+    name: nginx
+    state: started
+    enabled: true
 
 - name: create nginx sites directory
-  file: path=/etc/nginx/sites.d state=directory
+  file:
+    path: /etc/nginx/sites.d
+    state: directory
 
 - name: create nginx certs directory
-  file: path=/etc/nginx/certs state=directory
+  file:
+    path: /etc/nginx/certs
+    state: directory
 
 - name: copy nginx configuration
-  template: src=nginx.conf.j2 dest=/etc/nginx/nginx.conf backup=yes
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+    backup: yes
   notify: validate and reload nginx
 
 - name: copy additional nginx configuration
-  template: src={{ item }} dest=/etc/nginx/conf.d/{{ item[:-3] | basename }} owner=root group=root backup=yes
+  template:
+    src: "{{ item }}"
+    dest: "/etc/nginx/conf.d/{{ item[:-3] | basename }}"
+    owner: root
+    group: root
+    backup: yes
   # When using relative path ansible default looks in files/ directory :-(
   with_fileglob:
-  - conf.d/*.j2
+    - conf.d/*.j2
   notify: validate and reload nginx

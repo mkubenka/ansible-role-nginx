@@ -1,5 +1,3 @@
-# <% load "#{File.dirname(__FILE__)}/test/kitchen_docker.rb" %>
-
 ---
 
 driver:
@@ -7,6 +5,9 @@ driver:
   use_sudo: false
   privileged: true
   require_chef_omnibus: false
+  run_command: /sbin/init
+  volume:
+    - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
 
 transport:
   # Looks like this is still a issue: https://github.com/test-kitchen/test-kitchen/issues/1035
@@ -26,16 +27,13 @@ verifier:
 
 platforms:
   - name: centos-6
+    driver_config:
+      dockerfile: test/Dockerfile.centos6
   - name: centos-7
     driver_config:
       dockerfile: test/Dockerfile.centos7
-      run_command: /usr/sbin/init # Start systemd as root process
-    attributes:
-      systemd: true
-
-suites:
-  - name: default
-  - name: geoip
-  - name: modules
-    provisioner:
-      recursive_additional_copy_path: test/integration/modules/files
+      run_command: /usr/lib/systemd/systemd
+  - name: centos-8
+    driver_config:
+      dockerfile: test/Dockerfile.centos8
+      run_command: /usr/lib/systemd/systemd

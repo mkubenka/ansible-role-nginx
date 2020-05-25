@@ -4,8 +4,12 @@ driver:
   name: ec2
   region: eu-west-1
   require_chef_omnibus: false
-  instance_type: t2.micro
+  instance_type: t3.micro
   associate_public_ip: true
+
+transport:
+  # Looks like this is still a issue: https://github.com/test-kitchen/test-kitchen/issues/1035
+  max_ssh_sessions: 5
 
 provisioner:
   name: ansible_playbook
@@ -21,20 +25,40 @@ verifier:
 
 platforms:
   - name: centos-6
-  - name: centos-7
-  - name: amazon
     driver:
-      image_search:
-        owner-alias: "amazon"
-        name: amzn-ami*2017.03*gp2
-    transport:
-      username: ec2-user
-    provisioner:
-      ansible_platform: "amazon" # Autodetect is failing for some reason :(
+      block_device_mappings:
+        - device_name: /dev/sda1
+          ebs:
+            volume_type: gp2
+            delete_on_termination: true
+  - name: centos-7
+    driver:
+      block_device_mappings:
+        - device_name: /dev/sda1
+          ebs:
+            volume_type: gp2
+            delete_on_termination: true
+  # Not available yet, see https://bugs.centos.org/view.php?id=16614
+  # - name: centos-8
+  #   driver:
+  #     image_search:
+  #       owner-alias: "aws-marketplace"
+  #       name: "CentOS Linux 8*"
+  #     block_device_mappings:
+  #       - device_name: /dev/sda1
+  #         ebs:
+  #           volume_type: gp2
+  #           delete_on_termination: true
+  #   transport:
+  #     username: centos
 
 suites:
   - name: default
   - name: geoip
+    provisioner:
+      recursive_additional_copy_path: test/integration/geoip/files
+    excludes:
+      - centos-8
   - name: modules
     provisioner:
       recursive_additional_copy_path: test/integration/modules/files
