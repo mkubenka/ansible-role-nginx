@@ -1,23 +1,28 @@
 ---
 
 sudo: required
-dist: trusty
+dist: xenial
 services: docker
 
+# Work around an issue where bundler isn't installed correctly on Ruby 2.5.
+# We should remove this, and the explicit "gem install bundler" line, once
+# Travis uses Ruby 2.6 by default.
+rvm: 2.6
+
 install:
+  - gem install bundler
   - bundle install --jobs=3 --retry=3
 
 env:
   matrix:
     - INSTANCE=default-centos-6
     - INSTANCE=default-centos-7
+    - INSTANCE=default-centos-8
+    - INSTANCE=geoip-centos-6
+    - INSTANCE=geoip-centos-7
     - INSTANCE=modules-centos-6
     - INSTANCE=modules-centos-7
-
-before_script:
-  # https://github.com/zuazo/kitchen-in-travis-native/issues/1#issuecomment-142230889
-  - sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
-  - curl http://packages.us-west-1.amazonaws.com/2016.03/updates/6dbf2c302059/x86_64/repodata/repomd.xml
+    - INSTANCE=modules-centos-8
 
 script:
   - KITCHEN_LOCAL_YAML=.kitchen.ci.yml bundle exec kitchen test ${INSTANCE}
